@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://chaturbatemodels-lives.vercel.app/sitemap.xml
