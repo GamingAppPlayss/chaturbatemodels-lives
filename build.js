@@ -133,12 +133,16 @@ async function build() {
 
   // === HOME ===
   const first40 = models.slice(0, 40);
+  const rest = models.slice(40);
   const homeSchema = {"@context":"https://schema.org","@type":"WebSite","name":"ChaturbateModels","url":SITE_URL,"description":"Best Chaturbate models streaming live"};
   const homeItemList = {"@context":"https://schema.org","@type":"ItemList","itemListElement":first40.map((m,i)=>({"@type":"ListItem","position":i+1,"url":`${SITE_URL}/model/${m.username}/`,"name":m.username}))};
 
+  // Build hidden cards for Load More
+  const hiddenCards = rest.map(m => modelCard(m).replace('class="card"', 'class="card hidden-card" style="display:none"'));
+
   const homeBody = `<main class="container">
 <h1>Best Chaturbate Models Online</h1>
-<div class="grid" id="models-grid">${first40.map(modelCard).join('')}</div>
+<div class="grid" id="models-grid">${first40.map(modelCard).join('')}${hiddenCards.join('')}</div>
 <div id="load-more-wrap"><button class="btn" id="load-more">Load More Models</button></div>
 <div class="desc">
 <h2>About Chaturbate Live Cams</h2>
@@ -147,23 +151,14 @@ async function build() {
 <p>From amateurs to professional cam models, Chaturbate hosts thousands of live streams at any given moment. Use our tag system to filter by interests, or simply browse the grid above to find someone who catches your eye. All streams are live and updated in real-time.</p>
 </div></main>
 <script>
-document.getElementById('load-more').addEventListener('click', async function(){
-  this.textContent='Loading...';
-  try{
-    const r=await fetch('https://chaturbate.com/affiliates/api/onlinerooms/?format=json&wm=XhJGW&limit=500');
-    const d=await r.json();
-    const models=d.results||d;
-    const grid=document.getElementById('models-grid');
-    const existing=new Set([...grid.querySelectorAll('.card')].map(c=>c.href.split('/model/')[1]?.replace('/','') ));
-    let added=0;
-    models.forEach(m=>{
-      if(existing.has(m.username))return;
-      const a=document.createElement('a');a.href='/model/'+m.username+'/';a.className='card';
-      a.innerHTML='<img src="'+m.image_url_360x270+'" alt="'+m.username+'" loading="lazy" width="360" height="270"><div class="card-body"><h3>'+m.username+'</h3><div class="meta"><span class="viewers">👁 '+m.num_users+'</span> · '+(m.age||'?')+'y · '+(m.location||'Unknown')+'</div></div>';
-      grid.appendChild(a);added++;
-    });
-    this.textContent=added?'Loaded '+added+' more':'All models loaded';
-  }catch(e){this.textContent='Error loading';}
+document.getElementById('load-more').addEventListener('click', function(){
+  const hidden = document.querySelectorAll('.hidden-card[style*="display:none"]');
+  const batch = Array.from(hidden).slice(0, 40);
+  batch.forEach(c => { c.style.display = ''; c.classList.remove('hidden-card'); });
+  if (document.querySelectorAll('.hidden-card[style*="display:none"]').length === 0) {
+    this.textContent = 'All models loaded';
+    this.disabled = true;
+  }
 });
 </script>`;
 
