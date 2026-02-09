@@ -183,7 +183,7 @@ document.getElementById('load-more').addEventListener('click', function(){
 <h1>${m.username}'s Live Cam</h1>
 <div class="model-page">
 <div class="stream">
-<iframe src="${m.iframe_embed_revshare}" allowfullscreen></iframe>
+<iframe src="https://chaturbate.com/in/?tour=9oGW&campaign=XhJGW&track=embed&room=${m.username}&bgcolor=white" width="100%" height="528" allowfullscreen></iframe>
 <p class="desc" style="margin-top:12px">${m.room_subject || ''}</p>
 <p class="desc">${desc}</p>
 <div style="margin:12px 0">${tagsHtml}</div>
