@@ -127,8 +127,14 @@ async function build() {
   });
   const allTags = Object.keys(tagMap).sort();
 
-  // Clean output
-  fs.rmSync(OUT, { recursive: true, force: true });
+  // Clean output EXCEPT model pages (keep for SEO indexing)
+  // Remove tag pages and home (they get rebuilt), but preserve /model/
+  const tagDir = path.join(OUT, 'tag');
+  const tagsPage = path.join(OUT, 'tags');
+  if (fs.existsSync(tagDir)) fs.rmSync(tagDir, { recursive: true, force: true });
+  if (fs.existsSync(tagsPage)) fs.rmSync(tagsPage, { recursive: true, force: true });
+  const homeFile = path.join(OUT, 'index.html');
+  if (fs.existsSync(homeFile)) fs.unlinkSync(homeFile);
   mkdirp(OUT);
 
   // === HOME ===
