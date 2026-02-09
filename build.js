@@ -179,22 +179,40 @@ document.getElementById('load-more').addEventListener('click', function(){
     const tagsHtml = (m.tags || []).map(t => `<a href="/tag/${encodeURIComponent(t)}/" class="tag">${t}</a>`).join(' ');
     const schema = {"@context":"https://schema.org","@type":"Person","name":m.username,"url":`${SITE_URL}/model/${m.username}/`,"image":m.image_url_360x270};
     
+    const chatUrl = m.chat_room_url_revshare || `https://chaturbate.com/in/?tour=LQps&campaign=XhJGW&track=default&room=${m.username}`;
+    const genderLabel = {f:'Female',m:'Male',t:'Trans',c:'Couple'}[m.gender] || 'N/A';
+    const showStatus = m.current_show === 'public' ? '🟢 Public Show' : m.current_show === 'private' ? '🔴 Private' : m.current_show || 'Offline';
+    const hdBadge = m.is_hd ? '<span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-size:.75rem;margin-left:8px">HD</span>' : '';
+    const newBadge = m.is_new ? '<span style="background:#4CAF50;color:#fff;padding:2px 8px;border-radius:4px;font-size:.75rem;margin-left:8px">NEW</span>' : '';
+    const onlineMin = m.seconds_online ? Math.floor(m.seconds_online / 60) : null;
+    const onlineText = onlineMin ? `${Math.floor(onlineMin/60)}h ${onlineMin%60}m` : 'N/A';
+
     const body = `<main class="container">
-<h1>${m.username}'s Live Cam</h1>
+<h1>${m.display_name || m.username}'s Live Cam ${hdBadge}${newBadge}</h1>
 <div class="model-page">
 <div class="stream">
 <iframe src="https://chaturbate.com/in/?tour=9oGW&campaign=XhJGW&track=embed&room=${m.username}&bgcolor=white" width="100%" height="528" allowfullscreen></iframe>
+<div style="margin:16px 0;display:flex;gap:12px;flex-wrap:wrap">
+<a href="${chatUrl}" target="_blank" rel="noopener" style="display:inline-block;background:var(--accent);color:#fff;padding:12px 28px;border-radius:8px;font-weight:700;font-size:1.1rem;text-decoration:none;transition:opacity .2s">💬 Start Chatting</a>
+<a href="${chatUrl}" target="_blank" rel="noopener" style="display:inline-block;background:#2a2a3e;color:#fff;padding:12px 28px;border-radius:8px;font-weight:700;font-size:1.1rem;text-decoration:none;border:1px solid var(--border);transition:opacity .2s">🔗 Open on Chaturbate</a>
+</div>
 <p class="desc" style="margin-top:12px">${m.room_subject || ''}</p>
 <p class="desc">${desc}</p>
 <div style="margin:12px 0">${tagsHtml}</div>
 </div>
 <div class="sidebar"><dl>
 <dt>Username</dt><dd>${m.username}</dd>
+<dt>Display Name</dt><dd>${m.display_name || m.username}</dd>
+<dt>Status</dt><dd>${showStatus}</dd>
+<dt>Gender</dt><dd>${genderLabel}</dd>
 <dt>Age</dt><dd>${m.age || 'N/A'}</dd>
 <dt>Location</dt><dd>${m.location || 'Unknown'}</dd>
-<dt>Current Viewers</dt><dd>${m.num_users}</dd>
+<dt>Country</dt><dd>${m.country || 'N/A'}</dd>
+<dt>Current Viewers</dt><dd class="viewers">${m.num_users?.toLocaleString()}</dd>
 <dt>Followers</dt><dd>${m.num_followers?.toLocaleString() || 'N/A'}</dd>
+<dt>Online For</dt><dd>${onlineText}</dd>
 <dt>Languages</dt><dd>${m.spoken_languages || 'English'}</dd>
+<dt>Quality</dt><dd>${m.is_hd ? 'HD' : 'SD'}</dd>
 <dt>Tags</dt><dd>${tagsHtml || 'None'}</dd>
 </dl></div>
 </div></main>`;
